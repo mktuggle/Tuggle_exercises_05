@@ -12,7 +12,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = FALSE, error=TRUE, message=FALSE, warning=FALSE)
 ```
 
 ```{r libraries}
@@ -93,7 +93,8 @@ expeditions_graph <- expeditions %>%
   ggplot(aes(y = time_to_peak, x  = year, fill = season)) +
   geom_col() +
   facet_wrap(vars(season), nrow = 2, scales = "free") +
-  labs(title = "How has the number of days it takes to climb the peaks changed over time?",
+  labs(title = "How has the number of days it takes to climb 
+       the peaks changed over time?",
        y = "Days from base camp to peak",
        x = "Year",
        caption = "Note: Difference in y-axis values for ease of comparison. 
@@ -296,13 +297,13 @@ covid19 %>%
   theme(legend.position = element_blank()) +
   transition_time(date) -> weekly_cases_by_state
 
-animate(weekly_cases_by_state, nframes = 200, duration = 30, renderer = gifski_renderer())
+#animate(weekly_cases_by_state, nframes = 200, duration = 30, renderer = gifski_renderer())
 
-anim_save("us_weekly_cases.gif")
+#anim_save("us_weekly_cases.gif")
 ```
  
-```{r, echo}
-knitr::include_graphics("us_weekly_cases.gif")
+```{r, echo=FALSE}
+#knitr::include_graphics("us_weekly_cases.gif")
 ```
 
 I'm having a really weird error - the graph was animating totally fine until I went to do the final anim save and put it into a gif when it started saying that 'weekly_cases_by_state' doesn't exist. If I highlight the code and run it up to that point it works, and it saves the code chunk to 'weekly_cases_by_state', until I try to animate and then it says that file does not exist. I renamed it, reloaded my libraries and data a few types, renamed the file, and tried to find solutions online but I didn't see any that quite matched my issue. 
@@ -310,42 +311,6 @@ I'm having a really weird error - the graph was animating totally fine until I w
 But from what I saw before the error, it was interesting to now be able to see the trends over time, considering it doesn't seem like that long ago that New York was just starting to shoot up, but we now have months of data past that. I'm interested now in looking at what precautions were put into place in Guam, considering how quickly they dropped down in new cases (it may have a lot to do with being an island with a small population, but there's probably still other factors).
   
   7. In this exercise you will animate a map of the US, showing how cumulative COVID-19 cases per 10,000 residents has changed over time. This is similar to exercises 11 & 12 from the previous exercises, with the added animation! So, in the end, you should have something like the static map you made there, but animated over all the days. Put date in the subtitle. Comment on what you see. The code below gives the population estimates for each state. Because there are so many dates, you are going to only do the animation for all Fridays. So, use `wday()` to create a day of week variable and filter to all the Fridays.
-
-```{r}
-census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_census_2018_state_pop_est.csv?dl=1") %>% 
-  separate(state, into = c("dot","state"), extra = "merge") %>% 
-  select(-dot) %>% 
-  mutate(state = str_to_lower(state))
-
-lower_covid19 <- covid19%>% 
-  group_by(state) %>% 
-  #top_n(n = 1, wt = state) %>% 
-  mutate(state = str_to_lower(state))
-
-covid19_pop <- lower_covid19 %>% 
-  left_join(census_pop_est_2018,
-            by = c("state")) %>% 
-  mutate(day = wday(date, label = TRUE),
-         cases_per_10000 = (cases/est_pop_2018)*10000) %>% 
-  filter(day == "Fri")
-
-states_map <- map_data("state")
-```
-
-```{r}
-covid19_pop %>% 
-  ggplot() +
-  geom_map(map = states_map,
-           aes(map_id = state,
-               fill = cases_per_10000)) +
-  labs(title = "State COVID-19 Cases Over Time",
-       fill = "Cases per 10,000 people") +
-       #subtitle = "Date: {frame_along}") +
-  expand_limits(x = states_map$long, y = states_map$lat) +
-  theme_map() +
-  theme(legend.position = "bottom") +
-  transition_reveal(date)
-```
 
 ```{r, eval=FALSE}
 states_map <- map_data("state")
@@ -379,8 +344,8 @@ covid19_pop %>%
        fill = "Cases per 10,000 people") +
   expand_limits(x = states_map$long, y = states_map$lat) +
   theme_map() +
-  theme(legend.position = "bottom") +
-  transition_reveal(date) -> us_covid
+  theme(legend.position = "bottom") #+
+  #transition_reveal(date) -> us_covid
 
 #animate(us_covid, nframes = 200, duration = 30, renderer = gifski_renderer())
 
@@ -403,5 +368,6 @@ Even though I can't see it, I think this map would give similar information to t
 
   9. Below, provide a link to your GitHub page with this set of Weekly Exercises. Specifically, if the name of the file is 05_exercises.Rmd, provide a link to the 05_exercises.md file, which is the one that will be most readable on GitHub. If that file isn't very readable, then provide a link to your main GitHub page.
 
+[05_exercise_Tuggle.md] (https://github.com/mktuggle/Tuggle_exercises_05/blob/main/05_exercises_Tuggle.md)
 
 **DID YOU REMEMBER TO UNCOMMENT THE OPTIONS AT THE TOP?**
